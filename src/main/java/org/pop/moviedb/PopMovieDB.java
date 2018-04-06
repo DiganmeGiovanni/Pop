@@ -24,12 +24,15 @@ public class PopMovieDB {
      * @param term Query to use in API call
      * @param callback If API call is successful, returns the found movies
      */
-    public void search(String term, PopCBGeneric<List<MoviePartial>> callback) {
-        apiMovieDb.search(term, (success, movieSearch) -> {
-            if (success) {
-                callback.onResponse(true, movieSearch.getResults());
-            } else {
-                callback.onResponse(false, null);
+    public void search(String term, final PopCBGeneric<List<MoviePartial>> callback) {
+        apiMovieDb.search(term, new PopCBGeneric<MovieSearch>() {
+            @Override
+            public void onResponse(boolean success, MovieSearch movieSearch) {
+                if (success) {
+                    callback.onResponse(true, movieSearch.getResults());
+                } else {
+                    callback.onResponse(false, null);
+                }
             }
         });
     }
@@ -55,15 +58,18 @@ public class PopMovieDB {
      * @param movieId Movie's id
      * @param callback This callback will receive the url to poster
      */
-    public void poster(int movieId, PopCBGeneric<String> callback) {
-        images(movieId, (success, images) -> {
-            if (success) {
-                if (images.getPosters().size() > 0) {
-                    Image image = bestImage(images.getPosters());
-                    callback.onResponse(true, imageUrl(image));
+    public void poster(int movieId, final PopCBGeneric<String> callback) {
+        images(movieId, new PopCBGeneric<Images>() {
+            @Override
+            public void onResponse(boolean success, Images images) {
+                if (success) {
+                    if (images.getPosters().size() > 0) {
+                        Image image = bestImage(images.getPosters());
+                        callback.onResponse(true, imageUrl(image));
+                    }
+                } else {
+                    callback.onResponse(false, null);
                 }
-            } else {
-                callback.onResponse(false, null);
             }
         });
     }
@@ -73,15 +79,18 @@ public class PopMovieDB {
      * @param movieId Movie's id
      * @param callback This callback will receive the url to backdrop
      */
-    public void backdrop(int movieId, PopCBGeneric<String> callback) {
-        images(movieId, (success, images) -> {
-            if (success) {
-                if (images.getBackdrops().size() > 0) {
-                    Image image = bestImage(images.getBackdrops());
-                    callback.onResponse(true, imageUrl(image));
+    public void backdrop(int movieId, final PopCBGeneric<String> callback) {
+        images(movieId, new PopCBGeneric<Images>() {
+            @Override
+            public void onResponse(boolean success, Images images) {
+                if (success) {
+                    if (images.getBackdrops().size() > 0) {
+                        Image image = bestImage(images.getBackdrops());
+                        callback.onResponse(true, imageUrl(image));
+                    }
+                } else {
+                    callback.onResponse(false, null);
                 }
-            } else {
-                callback.onResponse(false, null);
             }
         });
     }

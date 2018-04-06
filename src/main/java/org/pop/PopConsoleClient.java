@@ -1,10 +1,10 @@
 package org.pop;
 
 import org.pop.moviedb.PopMovieDB;
-import org.pop.moviedb.entities.Cast;
-import org.pop.moviedb.entities.Crew;
-import org.pop.moviedb.entities.MoviePartial;
+import org.pop.moviedb.callbacks.PopCBGeneric;
+import org.pop.moviedb.entities.*;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class PopConsoleClient {
@@ -69,15 +69,18 @@ public class PopConsoleClient {
         String query = scanner.next();
         System.out.println("");
 
-        popMovieDB.search(query, (success, movieSearch) -> {
-            if (success) {
-                System.out.println("\nResults");
-                for (MoviePartial moviePartial : movieSearch) {
-                    System.out.println("[" + moviePartial.getId() + "]\t" + moviePartial.getTitle());
+        popMovieDB.search(query, new PopCBGeneric<List<MoviePartial>>() {
+            @Override
+            public void onResponse(boolean success, List<MoviePartial> movieSearch) {
+                if (success) {
+                    System.out.println("\nResults");
+                    for (MoviePartial moviePartial : movieSearch) {
+                        System.out.println("[" + moviePartial.getId() + "]\t" + moviePartial.getTitle());
+                    }
                 }
-            }
 
-            anyKey();
+                anyKey();
+            }
         });
     }
 
@@ -87,14 +90,17 @@ public class PopConsoleClient {
         int movieId = scanner.nextInt();
         System.out.println("");
 
-        popMovieDB.details(movieId, (success, movie) -> {
-            if (success) {
-                System.out.println("Title: " + movie.getTitle());
-                System.out.println("Original title: " + movie.getOriginalTitle());
-                System.out.println("Runtime: " + movie.getRuntime());
-            }
+        popMovieDB.details(movieId, new PopCBGeneric<Movie>() {
+            @Override
+            public void onResponse(boolean success, Movie movie) {
+                if (success) {
+                    System.out.println("Title: " + movie.getTitle());
+                    System.out.println("Original title: " + movie.getOriginalTitle());
+                    System.out.println("Runtime: " + movie.getRuntime());
+                }
 
-            anyKey();
+                anyKey();
+            }
         });
     }
 
@@ -104,20 +110,23 @@ public class PopConsoleClient {
         int movieId = scanner.nextInt();
         System.out.println("");
 
-        popMovieDB.credits(movieId, (success, credits) -> {
-            if (success) {
-                System.out.println("CAST:");
-                for (Cast cast : credits.getCast()) {
-                    System.out.println("* " + cast.getName() + " ==> " + cast.getCharacter());
+        popMovieDB.credits(movieId, new PopCBGeneric<Credits>() {
+            @Override
+            public void onResponse(boolean success, Credits credits) {
+                if (success) {
+                    System.out.println("CAST:");
+                    for (Cast cast : credits.getCast()) {
+                        System.out.println("* " + cast.getName() + " ==> " + cast.getCharacter());
+                    }
+
+                    System.out.println("CREW:");
+                    for (Crew crew : credits.getCrew()) {
+                        System.out.println("* " + crew.getName() + " ==> " + crew.getJob());
+                    }
                 }
 
-                System.out.println("CREW:");
-                for (Crew crew : credits.getCrew()) {
-                    System.out.println("* " + crew.getName() + " ==> " + crew.getJob());
-                }
+                anyKey();
             }
-
-            anyKey();
         });
     }
 
@@ -127,12 +136,15 @@ public class PopConsoleClient {
         int movieId = scanner.nextInt();
         System.out.println("");
 
-        popMovieDB.poster(movieId, (success, url) -> {
-            if (success) {
-                System.out.println("* " + url);
-            }
+        popMovieDB.poster(movieId, new PopCBGeneric<String>() {
+            @Override
+            public void onResponse(boolean success, String url) {
+                if (success) {
+                    System.out.println("* " + url);
+                }
 
-            anyKey();
+                anyKey();
+            }
         });
     }
 
@@ -142,12 +154,15 @@ public class PopConsoleClient {
         int movieId = scanner.nextInt();
         System.out.println("");
 
-        popMovieDB.backdrop(movieId, (success, url) -> {
-            if (success) {
-                System.out.println("* " + url);
-            }
+        popMovieDB.backdrop(movieId, new PopCBGeneric<String>() {
+            @Override
+            public void onResponse(boolean success, String url) {
+                if (success) {
+                    System.out.println("* " + url);
+                }
 
-            anyKey();
+                anyKey();
+            }
         });
     }
 }
